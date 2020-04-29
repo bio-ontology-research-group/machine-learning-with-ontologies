@@ -1,0 +1,1597 @@
+\documentclass{beamer}
+\usepackage{booktabs}
+\usepackage{pdfpages}
+\usepackage{mathtools}
+\usepackage{enumerate}
+\usepackage{multirow,tabularx}
+\usepackage{booktabs}
+\usepackage{pdfpages}
+\usepackage{proof}
+\usepackage{cancel}
+\usepackage{chronology}
+\usepackage{graphicx}
+\usepackage{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{animate}
+\usepackage{xr}
+
+\PassOptionsToPackage{usenames,dvipsnames,svgnames}{xcolor}  
+\usepackage{tikz}
+\usepackage{tkz-graph}
+
+
+\usepackage{wasysym}
+\usepackage{proof}
+\usepackage{cancel}
+\usepackage{chronology}
+\usepackage{graphicx}
+\usepackage{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{soul}
+%\usepackage{pstricks}
+\setbeamertemplate{navigation symbols}{}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\el}{$\mathcal{EL}^{++}$}
+\renewcommand{\Re}{\mathbb{R}}
+\newcommand{\BigO}[1]{\ensuremath{\operatorname{O}\bigl(#1\bigr)}}
+\newcommand{\myul}[2][blue]{\sethlcolor{#1}\hl{#2}\setulcolor{black}}
+
+\newcommand<>{\cunderline}[3]{\only<#1>{#3}\only<#2>{\underline{#3}}}
+\newcommand<>{\cem}[3]{\only<#1>{#3}\only<#2>{\ul{#3}}}
+\newcommand<>{\cgray}[3]{\only<#1>{#3}\only<#2>{\textcolor{gray}{#3}}}
+\newcommand<>{\colorize}[4]{\only<#1>{#4}\only<#2>{\textcolor{#3}{#4}}}
+
+\setbeamertemplate{navigation symbols}{\insertslidenavigationsymbol}
+%\setbeamertemplate{navigation symbols}{}
+% \addtobeamertemplate{navigation symbols}{}{%
+%     \usebeamerfont{footline}%
+%     \usebeamercolor[fg]{footline}%
+%     \hspace{1em}%
+%     \insertframenumber/\inserttotalframenumber
+% }
+
+\mode<presentation>
+{
+\usecolortheme{crane}
+%\useoutertheme{split}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+  \insertshorttitle\hfill%
+  \insertframenumber\,/\,\inserttotalframenumber}
+
+\usefonttheme[onlysmall]{structurebold}
+}
+\renewcommand{\em}{\itshape}
+\usepackage{pifont}
+\definecolor{purple}{rgb}{1,0,1}
+\definecolor{dred}{rgb}{0.7,0,0}
+\definecolor{myred}{rgb}{1,0,0}
+\definecolor{dblue}{rgb}{0,0,0.7}
+\definecolor{dgreen}{rgb}{0,0.5,0}
+\definecolor{myyellow}{rgb}{1,1,0}
+\newcommand{\parents}[1]{parents(#1)}
+\setbeamertemplate{itemize item}[ball]
+
+
+% \mode<presentation>
+% {
+% \useinnertheme[shadow=true]{rounded}
+% \useoutertheme{infolines}
+% \usecolortheme{dove}
+% \setbeamerfont{block title}{size={}}
+% }
+
+\title[Bio-Ontologies]{Semantic similarity and machine learning with ontologies}
+
+\author{Robert Hoehndorf and Maxat Kulmanov}
+
+
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{Before the tutorial}
+  See \url{https://github.com/bio-ontology-research-group/ontology-tutorial}:
+  \begin{itemize}
+  \item install Docker (e.g.: {\tt apt-get install docker})
+  \item {\tt docker pull coolmaksat/embeddings:latest}
+%  \item {\tt docker pull leechuck/ontology-ml:latest}
+  \item {\tt docker run -i -t -p 8888:8888 coolmaksat/embeddings /bin/bash -c "jupyter notebook --notebook-dir=/home/borg/ontology-tutorial/ --ip='0.0.0.0' --port=8888 --no-browser --allow-root"}
+  \end{itemize}
+\end{frame}
+
+% \begin{frame}
+% \frametitle{Overview}
+% \tableofcontents
+% \end{frame}
+
+\section{Ontologies and graphs}
+
+\begin{frame}
+  \frametitle{Ontologies, machine learning, and AI}
+  \begin{itemize}
+  \item ontologies are ubiquitous
+  \item rich formal characterization (axioms)
+  \item how can they be used for (predictive) data analysis?
+    \begin{itemize}
+    \item ``fuzzy'', similarity-based search
+    \item predictive analysis and machine learning
+    \item background knowledge
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Learning goals}
+  \begin{itemize}
+  \item machine learning with ontologies as {\em features} (or
+    background knowledge)
+  \item unsupervised or supervised:
+    \begin{itemize}
+    \item here: mostly unsupervised {\em feature} learning
+    \item ``deep'' learning
+    \end{itemize}
+  \item focus on existing tools and methods
+    \begin{itemize}
+    \item Jupyter Notebooks and code examples
+    \end{itemize}
+  \item not covered:
+    \begin{itemize}
+    \item learning ontologies (axioms, definitions) from data
+    \item (most) natural language processing
+    \item reasoning with ontologies
+    \item learning on ``knowledge graphs''
+    \item machine learning theory
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Agenda}
+  \begin{itemize}
+  \item Introduction: ontologies and graphs
+  \item Semantic similarity
+  \item Machine learning:
+    \begin{itemize}
+    \item syntactic
+    \item graph-based
+    \item model-theoretic
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Preliminaries: ontologies}
+  \begin{itemize}
+  \item Specific artifacts expressing the intended meaning of a
+    vocabulary in terms of primitive categories and relations
+    describing the nature and structure of a domain of discourse
+    \begin{itemize}
+    \item in order to account for the competent use of vocabulary in
+      real situations (such as annotations in databases, etc.)
+    \end{itemize}
+  \item the intended meaning of {\em primitive} categories and
+    relations is expressed through axioms (axiomatic method, Tarski)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Preliminaries: axioms}
+  \begin{itemize}
+  \item {\em classes} represent kinds of things in the world
+    \begin{itemize}
+    \item {\em Arm}, {\em Apoptosis}, {\em Influenza}, {\em Homo
+        sapiens}, {\em Drinking behavior}, {\em Membrane}
+    \end{itemize}
+  \item {\em instances} of classes are individuals satisfying the
+    classes' intension
+    \begin{itemize}
+    \item my arm, the influenza I had last year, one ethanol molecule, etc.
+    \end{itemize}
+  \item {\em relations} between instances arise from interactions,
+    configurations, etc., of individuals
+    \begin{itemize}
+    \item my arm is {\bf part of} me, the {\bf duration of} my
+      influenza was 10 days
+    \end{itemize}
+  \item {\em axioms} specify the conditions that instances of a class
+    must satisfy
+    \begin{itemize}
+    \item every instance of {\em Hand} is a {\bf part of} an instance
+      of {\em Arm}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Description Logics: overview}
+  \begin{itemize}
+  \item TBox: axioms pertaining to the terminology of the domain (classes)
+  \item ABox: axioms stating facts (assertions) about the world
+  \item RBox: axioms holding for relations
+  \item Reasoning: derive implicitly represented knowledge (e.g.,
+    subsumption)
+  \item NB: a ``knowledge graph'' is an ABox + RBox
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Manchester OWL Syntax}
+  \begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|l|l|}
+      DL Syntax & Manchester Syntax & Example \\
+      \hline
+      $C \sqcap D$ & C and D & Human and Male \\
+      $C \sqcup D$ & C or D & Male or Female \\
+      $\neg C$ & not C & not Male \\
+      $\exists R.C$ & R some C & hasChild some Human \\
+      $\forall R.C$ & R only C & hasChild only Human \\
+      $(\geq n R.C)$ & R min n C & hasChild min 1 Human \\
+      $(\leq n R.C)$ & R max n C & hasChild max 1 Human \\
+      $(= n R.C)$ & R exactly n C & hasChild exactly 1 Human \\
+      $\{a\} \sqcup \{b\} \sqcup ...$ & \{a b ...\} & \{John Robert
+                                                      Mary\} \\
+      \hline
+    \end{tabular}
+  \end{table}
+\end{frame}
+
+
+% \begin{frame}
+%   \frametitle{Description Logic ALC: syntax}
+%   \begin{definition}
+%     Let $N_C$ be a set of concept names and $N_R$ be a set of relation
+%     names, $N_C \cap N_R = \emptyset$. $\mathcal{ALC}$ concept
+%     descriptions are inductively defined as:
+%     \begin{itemize}
+%     \item If $A \in N_C$, then $A$ is an $\mathcal{ALC}$ concept
+%       description
+%     \item If $C, D$ are $\mathcal{ALC}$ concept description, and $r
+%       \in N_R$, then the following are $\mathcal{ALC}$ concept descriptions:
+%       \begin{itemize}
+%       \item $C \sqcap D$
+%       \item $C \sqcup D$
+%       \item $\neg C$
+%       \item $\forall r.C$
+%       \item $\exists r.C$
+%       \end{itemize}
+%     \end{itemize}
+%   \end{definition}
+%   \begin{itemize}
+%   \item Use $\bot$ as abbreviation of $A \sqcap \neg A$, $\top$ as
+%     abbreviation of $A \sqcup \neg A$
+%   \end{itemize}
+% \end{frame}
+
+% Examples of concept descriptions, dl1.pdf, p8
+
+% \begin{frame}
+%   \frametitle{Description Logic ALC: semantics}
+%   \begin{definition}
+%     An interpretation
+%     $\mathcal{I} = (\Delta^\mathcal{I}, \cdot^\mathcal{I})$ consists
+%     of a non-empty domain $\Delta^\mathcal{I}$ and an interpretation
+%     function $\cdot^\mathcal{I}$:
+%     \begin{itemize}
+%     \item $A^\mathcal{I} \subseteq \Delta^\mathcal{I}$ for all $A \in
+%       N_C$,
+%     \item $r^\mathcal{I} \subseteq \Delta^\mathcal{I} \times
+%       \Delta^\mathcal{I}$ for all $r \in N_R$
+%     \end{itemize}
+%     The interpretation function is extended to $\mathcal{ALC}$ concept
+%     descriptions as follows:
+%     \begin{itemize}
+%     \item $(C \sqcap D)^\mathcal{I} := C^\mathcal{I} \cap D^\mathcal{I}$
+%     \item $(C \sqcup D)^\mathcal{I} := C^\mathcal{I} \cup D^\mathcal{I}$
+%     \item $(\neg C)^\mathcal{I} := \Delta^\mathcal{I} - C^\mathcal{I}$
+%     \item $(\forall r.C)^\mathcal{I} := \{ d \in \Delta^\mathcal{I} |
+%       \mbox{for all } e \in \Delta^\mathcal{I}: (d,e) \in
+%       r^\mathcal{I} \mbox{ implies } e \in C^\mathcal{I}\}$
+%     \item $(\exists r.C)^\mathcal{I} := \{ d \in \Delta^\mathcal{I} |
+%       \mbox{there is } e \in \Delta^\mathcal{I}: (d,e) \in
+%       r^\mathcal{I} \mbox{ and } e \in C^\mathcal{I}\}$
+%     \end{itemize}
+%   \end{definition}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Description Logic: terminologies}
+%   \begin{itemize}
+%   \item A concept definition is of the form $A \equiv C$ where
+%     \begin{itemize}
+%     \item $A$ is a concept name
+%     \item $C$ is a concept description
+%     \end{itemize}
+%   \item A TBox is a finite set of concept definitions such that it
+%     \begin{itemize}
+%     \item does not contain multiple definitions, % A equiv B, A equiv C
+%     \item does not contain cyclic definitions
+%       % A equiv B and C, B equiv A and C
+%     \end{itemize}
+%   \item A {\em defined concept} occurs on the left-hand side of a
+%     definition
+%   \item A {\em primitive concept} does not occur on the left-hand side
+%     of a definition
+%     % See: axiomatic-deductive method!
+%   \item An interpretation $\mathcal{I}$ is a model of a TBox
+%     $\mathcal{T}$ if it satisfies all its concept definitions:
+%     $A^\mathcal{I} = C^\mathcal{I}$ for all $A \equiv C \in \mathcal{T}$
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Description Logic: assertions}
+%   \begin{itemize}
+%   \item An assertion is of the form $C(a)$ (concept assertion) or
+%     $r(a,b)$ (role assertion), where $C$ is a concept description, $r$
+%     is a role, $a,b$ are individual names from a set $N_I$ of such
+%     names
+%   \item An ABox is a finite set of assertions
+%   \item An interpretation $\mathcal{I}$ is a model of an ABox
+%     $\mathcal{A}$ if it satisfies all its assertions:
+%     \begin{itemize}
+%     \item $a^\mathcal{I} \in C^\mathcal{I}$ for all $C(a) \in
+%       \mathcal{A}$
+%     \item $(a^\mathcal{I},b^\mathcal{I}) \in r^\mathcal{I}$ for all
+%       $r(a,b) \in \mathcal{A}$
+%     \end{itemize}
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Description Logic: Reasoning}
+%   \begin{itemize}
+%   \item Subsumption: Is $C$ a subconcept of $D$?
+%     \begin{itemize}
+%     \item $C \sqsubseteq_\mathcal{T} D$ iff $C^\mathcal{I} \subseteq
+%       D^\mathcal{I}$ for all models $\mathcal{I}$ of $\mathcal{T}$
+%     \end{itemize}
+%   \item Satisfiability: Is the concept $C$ non-contradictory?
+%     \begin{itemize}
+%     \item $C$ is satisfiable w.r.t. $\mathcal{T}$ iff $C^\mathcal{I}
+%       \not= \emptyset$ for some model $\mathcal{I}$ of $\mathcal{T}$
+%     \end{itemize}
+%   \item Consistency: Is the ABox $\mathcal{A}$ non-contradictory?
+%     \begin{itemize}
+%     \item $\mathcal{A}$ is consistent w.r.t. $\mathcal{T}$ iff it has
+%       a model that is also a model of $\mathcal{T}$
+%     \end{itemize}
+%   \item Instantiation: Is $e$ an instance of $C$?
+%     \begin{itemize}
+%     \item $\mathcal{A} \models_\mathcal{T} C(e)$ iff $e^\mathcal{I}
+%       \in C^\mathcal{I}$ for all models $\mathcal{I}$ of $\mathcal{T}$
+%       and $\mathcal{A}$.
+%     \end{itemize}
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Offtopic: knowledge graphs}
+%   My favorite definition of ``knowledge graph'':\\
+%   A knowledge graph is an ABox + RBox.
+%   \begin{itemize}
+%   \item ontologies are (mostly) the TBox!
+%   \end{itemize}
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Ontologies provide background knowledge}
+  \centerline{\includegraphics[width=.8\textwidth]{t-cell-aggregation.png}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Ontologies provide background knowledge}
+  \centerline{\includegraphics[width=.8\textwidth]{t-cell-activation.png}}
+\end{frame}
+
+% \begin{frame}
+%   \frametitle{Ontologies provide background knowledge}
+%   \centerline{\includegraphics[width=.95\textwidth]{moesin-1.png}}
+%   \centerline{\includegraphics[width=.85\textwidth]{moesin-2.png}}
+  
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Using background knowledge}
+  \begin{block}{Problem statement (first attempt):}
+    Given a set of entities (instances) within an ontology (DL
+    theory). Can we discover/predict {\em new} relations between the
+    entities, or between entities and classes in the ontology?
+  \end{block}
+  \pause
+  \begin{itemize}
+  \item what relations, and when is a fact ``new''?
+  \pause
+  \item what features are relevant?
+    \begin{itemize}
+    \item depends on the relation!
+    \end{itemize}
+  \pause
+  \item finding new facts is only one (minor?) use case
+    \begin{itemize}
+    \item other uses: encode background knowledge for machine learning
+      models; add new classes; expand definition; constrained
+      learning; etc.
+    \item computing ``similarity''
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Semantic similarity: some examples}
+  \begin{itemize}
+  \item Are cyclin dependent kinases {\em functionally} more similar
+    to lipid kinases or to riboflavin kinases? How about {\em
+      phenotypically}?
+  \item Which protein in the {\em mouse} is functionally most similar
+    to the zebrafish {\em gustducin} protein?
+  \item Which mouse knockout resembles {\em Bardet-Biedl Syndrome 8}?
+  \item Are there mouse knockouts that resemble the side effects of
+    diclofenac?
+  \item Which genetic disease produces similar symptoms to ebola?
+  \item Does functional similarity correlate with phenotypic
+    similarity?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Semantic similarity}
+  semantic similarity measures:
+  \begin{itemize}
+  \item for words, terms, classes
+  \item role of background knowledge:
+    \begin{itemize}
+    \item statistical/distributional semantics, large corpora
+    \item ontologies: (graph) topology
+    \end{itemize}
+  \item similarity measures: hand-crafted or data-driven?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Semantic similarity or machine learning}
+  \begin{itemize}
+  \item semantic similarity measures are mostly hand-crafted
+    \begin{itemize}
+    \item capture certain intuition about what constitutes
+      ``similarity''
+    \item different measures for different kinds of similarity
+    \item usually interpretable (and explainable)
+    \end{itemize}
+    \pause
+  \item machine learning methods are mostly data-driven
+    \begin{itemize}
+    \item the architecture of the model is still hand-crafted
+    \item usually hard to interpret
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Ontologies and graphs}
+  \begin{itemize}
+  \item semantic similarity measures {\em and machine learning models} on
+    ontologies can be graph-based, feature-based, or model-based
+    \begin{itemize}
+    \item graph-based: ontology as a graph
+    \item feature-based: extract (or obtain) features for
+      classes/relations
+    \item model-based: define similarity within (special) $\Sigma$-structures
+    \end{itemize}
+    \pause
+  \item we may need to generate graphs from ontologies
+    \begin{itemize}
+    \item {\em is-a} relations are easy (this is just {\tt owl:subClassOf})
+    \item how about {\em part-of}, {\em regulates}, {\em precedes},
+      etc.?
+    \item disjointness, universal vs. existential quantification,
+      cardinality restrictions, intersection, union, negation?
+    \end{itemize}
+    \pause
+  \item relational patterns are implicit in OWL axioms
+    \begin{itemize}
+    \item design patterns as ``relations'' between classes
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Relations as patterns}
+  \centerline{\includegraphics[height=.8\textheight]{plant-ontology-sample.png}}
+\end{frame}
+
+% \begin{frame}
+%   \frametitle{Relations as patterns}
+%   \begin{itemize}
+%   \item OBO Relation Ontology (RO):
+%     \begin{itemize}
+%     \item \url{https://github.com/oborel/obo-relations}
+%     \end{itemize}
+%   \item Basic Formal Ontology (BFO):
+%     \begin{itemize}
+%     \item provides top-level classes
+%       \begin{itemize}
+%       \item Continuant, Process, Function, Material object, etc.
+%       \end{itemize}
+%     \item used for some OBO Foundry ontologies
+%     \end{itemize}
+%   \item RO and BFO provide a top-level system of classes and relations
+%     shared across many biomedical ontologies
+%   \item this system may define patterns used to generate graphs
+%   \end{itemize}
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Relations as patterns}
+  \begin{itemize}
+  \item {\tt X SubClassOf: Y}: $X \xrightarrow{\text{is-a}} Y$
+  \item {\tt X SubClassOf: part-of some Y}: $X \xrightarrow{\text{part-of}} Y$
+  \item {\tt X SubClassOf: regulates some Y}: $X \xrightarrow{\text{regulates}} Y$
+  \item {\tt X DisjointWith: Y}: $X \xleftrightarrow{\text{disjoint}} Y$
+  \item {\tt X EquivalentTo: Y}: $X \xleftrightarrow{\equiv} Y$,
+    $\{X,Y\}$
+  \item ...
+  \end{itemize}
+  NB: in bio-ontologies, the OBO Relation Ontology defines these
+  patterns
+\end{frame}
+
+\begin{frame}
+  \frametitle{Asserted and inferred}
+  \begin{itemize}
+  \item relation patterns can be asserted or inferred
+  \item {\tt X SubClassOf: part-of some Y}
+  \item {\tt Y SubClassOf: part-of some Z}
+  \item {\tt part-of o part-of SubPropertyOf: part-of}
+  \item $\vdash$ {\tt X SubClassOf: part-of some Z}
+  \item Therefore: $X \xrightarrow{\text{part-of}} Z$
+  \item $\Rightarrow$ we should use deductive inference to generate
+    these patterns
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Tree models}
+  \begin{itemize}
+  \item some languages have the {\em finite model} and {\em tree
+      model} properties
+    \begin{itemize}
+    \item such as the Description Logic $\mathcal{ALC}$
+    \item generated through a tableaux algorithm
+    \end{itemize}
+  \item nodes: individuals
+    \begin{itemize}
+    \item node labels: concept names, concept descriptions
+    \end{itemize}
+  \item edges: relations between individuals
+  \item can be extended to more expressive languages (with blocking,
+    cycles, etc.)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Methods and tools}
+  \begin{itemize}
+  \item edges should be ``meaningful'': not merely syntax (why?)
+    \begin{itemize}
+    \item the RDF serialization of OWL is a graph and contains all
+      information but is a bad idea for semantic similarity or machine
+      learning (more later)
+    \item conceptual graphs?
+    \end{itemize}
+  \item OBO Format represents ontologies as graphs:
+    \begin{itemize}
+    \item Protege/OWLAPI: OBO export
+    \item OBO toolsets (e.g., ROBOT)
+    \item
+      \url{https://github.com/bio-ontology-research-group/Onto2Graph}
+    \end{itemize}
+    \pause
+  \item but: a conversion of an ontologies into a graph will almost
+    always lead to a loss of information
+  \end{itemize}
+\end{frame}
+
+\section{Semantic similarity}
+
+\begin{frame}
+  Semantic similarity
+  \begin{itemize}
+  \item We want to use {\em  background knowledge} in ontologies to
+    \begin{itemize}
+    \item determine similarity between classes,
+    \item instances,
+    \item and entities with ontology annotations
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{itemize}
+  \item semantic similarity measures similarity between classes
+  \item semantic similarity measures similarity between instances of classes
+  \item semantic similarity measures similarity between entities
+    {\em annotated} with classes
+  \item $\Rightarrow$ reduce all of this to similarity between classes
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  What properties do we want in a similarity measure?
+  \\
+  A function $sim: D \times D$ is a similarity on $D$ if, for
+  all $x, y \in D$, the function $sim$ is:  \begin{itemize}
+    \pause
+  \item non-negative: $sim(x,y) \geq 0$ for all $x, y$
+    \pause
+  \item symmetric: $sim(x,y) = sim(y,x)$
+    \pause
+  \item reflexive: $sim(x,x) = max_D$
+    \pause
+    \begin{itemize}
+    \item weaker form: $sim(x,x) > sim(x,y)$ for all $x \not= y$
+    \end{itemize}
+    \pause
+  \item $sim(x,x) > sim(x,y)$ for $x\not= y$
+    \pause
+  \item $sim$ is a {\em normalized} similarity measure if it has
+    values in $[0,1]$
+  \end{itemize}
+\end{frame}
+
+\usetikzlibrary{arrows,positioning,automata}
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state]          (A)                        {$Thing$};
+          \node[state]          (B) [below left =of A]    {$Color$};
+          \node[state]          (C) [below right =of A]    {$Shape$};
+          \node[state]          (D) [below left =of B]    {$Red$};
+          \node[state]          (H) [below right =of B]    {$Green$};
+          \node[state]          (E) [below  =of D]    {$Orange$};
+          \node[state]          (F) [below =of C]    {$Round$};
+          \node[state]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{every node/.style={fill=white}} 
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+        \pause
+      \item distance on shortest path (Rada {\em et al.}, 1989)
+        \pause
+      \item $dist_{Rada}(u,v) = sp(u, isa, v)$
+        \pause
+      \item $sim_{Rada}(u,v) = \frac{1}{dist_{Rada}(u,v) + 1}$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state]          (A)                        {$Thing$};
+          \node[state]          (B) [below left =of A]    {$Color$};
+          \node[state]          (C) [below right =of A]    {$Shape$};
+          \node[state, fill=green]          (D) [below left =of B]    {$Red$};
+          \node[state, fill=green]          (H) [below right =of B]    {$Green$};
+          \node[state]          (E) [below  =of D]    {$Orange$};
+          \node[state]          (F) [below =of C]    {$Round$};
+          \node[state]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [highlight]    node   {$isa$} (B)
+          (H)     edge [highlight]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item distance on shortest path
+        \pause
+       \item distance(green, red) = 2
+       \item $sim_{Rada}(green, red) = \frac{1}{3}$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state]          (A)                        {$Thing$};
+          \node[state]          (B) [below left =of A]    {$Color$};
+          \node[state]          (C) [below right =of A]    {$Shape$};
+          \node[state]          (D) [below left =of B]    {$Red$};
+          \node[state]          (H) [below right =of B]    {$Green$};
+          \node[state]          (E) [below  =of D]    {$Orange$};
+          \node[state, fill=green]          (F) [below =of C]    {$Round$};
+          \node[state, fill=green]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [highlight]    node   {$isa$} (C)
+          (G)     edge [highlight]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+       \item distance on shortest path
+       \item distance(square, round) = 2
+       \item $sim_{Rada}(square, round) = \frac{1}{3}$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state]          (A)                        {$Thing$};
+          \node[state, fill=green]          (B) [below left =of A]    {$Color$};
+          \node[state]          (C) [below right =of A]    {$Shape$};
+          \node[state]          (D) [below left =of B]    {$Red$};
+          \node[state]          (H) [below right =of B]    {$Green$};
+          \node[state, fill=green]          (E) [below  =of D]    {$Orange$};
+          \node[state]          (F) [below =of C]    {$Round$};
+          \node[state]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [highlight]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [highlight]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+       \item distance on shortest path
+       \item distance(orange, color) = 2
+       \item $sim_{Rada}(orange, color) = \frac{1}{3}$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{itemize}
+  \item shortest path is not always intuitive
+    \pause
+  \item we need a way to determine {\em specificity} of a class
+    \begin{itemize}
+    \item number of ancestors
+    \item number of children
+    \item information content
+    \end{itemize}
+    \pause
+  \item {\em density} of a branch in the ontology
+    \begin{itemize}
+    \item number of siblings
+    \item information content
+    \end{itemize}
+    \pause
+  \item account for different edge types
+    \begin{itemize}
+    \item non-uniform edge weighting
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity}
+  \begin{itemize}
+  \item term specificity measure $\sigma: C \mapsto \mathbb{R}$:
+    \begin{itemize}
+    \item $x \sqsubseteq y \rightarrow \sigma(x) \geq \sigma(y)$
+    \end{itemize}
+    \pause
+  \item intrinsic:
+    \begin{itemize}
+    \item $\sigma(x) = f(depth(x))$
+    \item $\sigma(x) = f(A(x))$ (for ancestors $A(x)$)
+    \item $\sigma(x) = f(D(x))$ (for descendants $D(x)$)
+    \item many more, e.g., Zhou et al.: $\sigma(x) = k \cdot \Big( 1-\frac{\log
+        |D(x)|}{\log |C|} \Big) + (1-k) \frac{\log depth(x)}{\log
+        depth(G_T)} $
+    \end{itemize}
+    \pause
+  \item extrinsic:
+    \begin{itemize}
+    \item $\sigma(x)$ defined as a function of instances (or annotations) $I$
+      \begin{itemize}
+      \item note: the number of instances monotonically decreases with
+        increasing depth in taxonomies
+      \end{itemize}
+    \item Resnik 1995: $eIC_{Resnik}(x) = -\log p(x)$ (with $p(x) =
+      \frac{|I(x)|}{|I|}$)
+      \begin{itemize}
+      \item in biology, one of the most popular specificity measure when
+        annotations are present
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Resnik 1995: similarity between $x$ and $y$ is the
+        information content of the {\em most informative common
+          ancestor}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,fill=green,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,fill=green,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Resnik 1995: similarity between $x$ and $y$ is the
+        information content of the {\em most informative common
+          ancestor}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,fill=yellow,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,fill=green,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,fill=green,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Resnik 1995: similarity between $x$ and $y$ is the
+        information content of the {\em most informative common
+          ancestor}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,fill=yellow,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,fill=green,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,fill=green,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Resnik 1995: similarity between $x$ and $y$ is the
+        information content of the {\em most informative common
+          ancestor}
+        \item $sim_{Resnik}(Green, Red) = 1.0$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,fill=yellow,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,fill=green,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,fill=green,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Resnik 1995: similarity between $x$ and $y$ is the
+        information content of the {\em most informative common
+          ancestor}
+        \item $sim_{Resnik}(Green, Orange) = 1.0$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,fill=yellow,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,fill=green,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,fill=green,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Resnik 1995: similarity between $x$ and $y$ is the
+        information content of the {\em most informative common
+          ancestor}
+        \item $sim_{Resnik}(Square, Orange) = 0.0$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{itemize}
+  \item (Red, Green) and (Orange, Green) have the same similarity
+  \item need to incorporate the specificity of the compared classes
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,fill=yellow,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,fill=green,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,fill=green,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Lin 1998: $sim_{Lin}(x,y) = \frac{2\cdot
+          IC(MICA(x,y))}{IC(x) + IC(y)}$
+        \pause
+      \item $sim_{Lin}(Green, Red) = 0.5$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,fill=yellow,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,fill=green,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,fill=green,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Lin 1998: $sim_{Lin}(x,y) = \frac{2\cdot
+          IC(MICA(x,y))}{IC(x) + IC(y)}$
+      \item $sim_{Lin}(Green, Orange) = 0.4$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{itemize}
+  \item many(!) others:
+    \begin{itemize}
+    \item Jiang \& Conrath 1997
+    \item Mazandu \& Mulder 2013
+    \item Schlicker et al. 2009
+    \item ...
+  \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{itemize}
+  \item we only looked at comparing pairs of classes
+  \item mostly, we want to compare {\em sets} of classes
+    \begin{itemize}
+    \item set of GO annotations
+    \item set of signs and symptoms
+    \item set of phenotypes
+    \end{itemize}
+  \item two approaches:
+    \begin{itemize}
+    \item compare each class individually, then merge
+    \item directly set-based similarity measures
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,fill=gray,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,fill=green,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,fill=gray,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,fill=green,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item similarity between a square-and-orange thing and a
+        round-and-red thing
+        \pause
+      \item Pesquita et al., 2007:
+        $simGIC(X,Y) = \frac{\sum_{c \in A(X) \cap A(Y)}
+          IC(c)}{\sum_{c \in A(X) \cup A(Y)} IC(c)}$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,fill=pink,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,fill=pink,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,fill=pink,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,fill=gray,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,fill=green,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,fill=gray,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,fill=green,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item similarity between a square-and-orange thing and a
+        round-and-red thing
+      \item Pesquita et al., 2007:
+        $simGIC(X,Y) = \frac{\sum_{c \in A(X) \cap A(Y)}
+          IC(c)}{\sum_{c \in A(X) \cup A(Y)} IC(c)}$
+      \item $simGIC(so,rr) = \frac{2}{11}$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{itemize}
+  \item alternatively: use different merging strategies
+  \item common: average, maximum, {\bf best-matching average}
+    \begin{itemize}
+    \item Average: $sim_A(X,Y) = \frac{\sum_{x\in X} \sum_{y \in Y} sim(x,y)}{|X| \times |Y|}$
+    \item Max average: $sim_{MA}(X,Y) = \frac{1}{|X|} \sum_{x\in X} \max_{y \in Y} sim(x,y)$
+    \item Best match average: $sim_{BMA}(X,Y) = \frac{sim_{MA}(X,Y) + sim_{MA}(Y,X)}{2}$
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{itemize}
+  \item Semantic Measures Library:
+    \begin{itemize}
+    \item comprehensive Java library
+    \item \url{http://www.semantic-measures-library.org/}
+    \end{itemize}
+  \item R packages: GOSim, GOSemSim, HPOSim, LSAfun,
+    ontologySimilarity,...
+  \item Python: sematch, fastsemsim (GO only)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Applications of semantic similarity}
+  \begin{itemize}
+  \item no obvious choice of similarity measure
+  \item depends on application
+    \begin{itemize}
+    \item e.g., predicting PPIs in different organisms through
+      similarity may benefit from a different similarity measure!
+    \end{itemize}
+  \item different similarity measures may react differently to biases
+    in data
+  \item needs some testing and experience
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Applications of semantic similarity}
+  Recommendations:
+  \begin{itemize}
+  \item use Resnik's information content measure
+  \item use Resnik's similarity
+  \item use Best Match Average
+  \item use the full ontology
+  \item classify your ontology using an automated reasoner before
+    applying semantic similarity
+    \begin{itemize}
+    \item although many ontologies come pre-classified
+    \end{itemize}
+  \item $\Rightarrow$ but there are many exceptions
+    \begin{itemize}
+    \item similar location $\Rightarrow$ use location subset of GO
+    \item developmental phenotypes $\Rightarrow$ use developmental
+      branch of phenotype ontology
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+
+% \begin{frame}
+%   \frametitle{An example: protein--protein interactions and GO functions}
+%   \centerline{\includegraphics[width=.49\textwidth]{YeastPPINetwork.png}
+%     \includegraphics[width=.49\textwidth]{go-figure1.jpg}}
+% \end{frame}
+
+\section{Machine learning and ontologies}
+
+\begin{frame}
+  \frametitle{Machine learning with ontologies: approaches}
+  \begin{itemize}
+  \item syntactic: treat axioms as ``sentences'' using language models
+  \item graph-based: treat ontologies as graphs (like in semantic similarity)
+  \item model-theoretic: encode model-theoretic semantics in optimization
+  \end{itemize}
+\end{frame}
+
+\subsection{Syntactic approaches}
+
+\begin{frame}
+  \frametitle{Ontologies: axioms, not graphs!}
+    \includegraphics[width=1\textwidth]{bcellapoptosis.png}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Ontologies: axioms, not graphs!}
+  Gene Ontology:
+  \begin{itemize}
+  \item {\tt behavior DisjointWith: 'developmental process'}
+  \item {\tt behavior SubclassOf: only-in-taxon some metazoa}
+  \item {\tt 'cell proliferation' DisjointWith: in-taxon some fungi}
+  \item {\tt 'cell growth' EquivalentTo: growth and ('results in
+      growth of' some cell)}
+  \item ...
+  \end{itemize}
+\end{frame}
+
+% \begin{frame}
+%   \frametitle{Ontologies: axioms, not graphs!}
+%   \begin{itemize}
+%   \item converting ontologies to graphs
+%     \begin{itemize}
+%     \item loses information
+%     \end{itemize}
+%   \item relations between ontologies
+%   \end{itemize}
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Ontology embeddings}
+  \begin{definition}
+    Let $O = (\Sigma = (C, R, I); ax; \vdash)$ be an ontology with a set of
+    classes $C$, a set of relations $R$, a set of instances $I$, a set
+    of axioms $ax$ and an inference relation $\vdash$. An ontology
+    embedding is a function $f_\eta : C \cup R \cup I \mapsto
+    \Re^n$ (or $\Sigma(O) \mapsto \Re^n$. % (subject to certain constraints).
+  \end{definition}
+  \pause For example, we can use co-occurrence within $ax^\vdash$ to
+  constrain the embedding function, where the constraints on
+  co-occurrence are formulated using the Word2Vec skipgram model.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Onto2Vec}
+  \centerline{\includegraphics[width=\textwidth]{onto2vecflow.png}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Word2Vec}
+  Maximize:
+  \begin{equation}
+    \frac{1}{N} \sum_{n=1}^{N} \sum_{-c\leq j \leq c, j\not=
+      0} \log p(w_{n+j}|w_n)
+  \end{equation}
+  with
+  \begin{equation}
+    p(w_o | w_i) = \frac{\exp({v'_{w_o}}^T v_{w_i})}{\sum_{w=1}^{W}
+      \exp({v'_{w}}^T v_{w_i})}
+  \end{equation}
+  (at least conceptually; different strategies are used to approximate Eqn. 2)
+\end{frame}
+
+\begin{frame}
+  \frametitle{Word2Vec}
+  \centerline{\includegraphics[width=\textwidth]{word2vec-example.png}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Predicting PPIs: trainable similarity measures}
+  \centerline{\includegraphics[width=.45\textwidth]{YSTUnsuper1.png}\includegraphics[width=.45\textwidth]{YstUnsup2.png}}
+
+   {\tiny Smaili et al. Onto2Vec: joint vector-based representation of
+     biological entities and their ontology-based annotations.}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Visualizing embeddings}
+  \centerline{\includegraphics[width=.9\textwidth]{updtsne.jpg}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Combination with text}
+  \begin{itemize}
+  \item ontologies contain more than axioms:
+    \begin{itemize}
+    \item labels, synonyms, definitions, authors, etc.
+    \end{itemize}
+  \item Description Logic axioms != natural language
+  \item transfer learning: learn on one domain/task, apply to another
+    \begin{itemize}
+    \item e.g.: learn on literature, apply to ontologies
+    \item words have ``meaning'' in literature, Description Logic
+      symbols have ``meaning'' in ontology axioms
+    \end{itemize}
+  \item Ontologies Plus Annotations 2 Vec (OPA2Vec) combines both
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Ontologies Plus Annotations 2 Vec}
+  \centerline{\includegraphics[width=1\textwidth]{opaworkflow16.png}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Axioms contribute to prediction tasks: GO and GO-PLUS}
+    % \processtable
+    % \caption{AUC values of ROC curves for PPI prediction for
+    %   GO-Plus and GO using Onto2Vec (cosine similiarity) and
+    %   Onto2Vec-NN (neural network).\label{Tab:GOplus}}
+    { \begin{tabularx}{\columnwidth}{XXXXXXX}\toprule & {}& {} &
+                                                                 Human & Yeast & Arabidopsis\\\midrule
+        $GO\_Onto2Vec$ & {} &{}& 0.7660 & 0.7701 & 0.7559 \\
+        $GO\_Onto2Vec\_NN$ & {} & {}& 0.8779& 0.8711 & 0.8364 \\
+        $GO\_plus\_Onto2Vec$ & {} & {}& 0.7880& 0.7943 & 0.7889 \\
+        $GO\_plus\_Onto2Vec\_NN$ &{} & {}& \textbf{0.9021}&\textbf{0.8937} & \textbf{0.8834}\\
+        \hline
+      \end{tabularx}}{}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Evaluating individual axioms}
+%  Testing how much each ontologies' axioms contribute to predictions:
+%  \begin{resizebox}{\textwidth}{!}{
+  Testing how much each ontologies' axioms contribute to predictions:
+  \tiny
+      \begin{tabularx}{\linewidth}{X|XX|XX}
+        \toprule
+        {} & \multicolumn{2}{c}{\textbf{Human}} & \multicolumn{2}{c}{\textbf{Arabidopsis}}\\
+        \midrule
+        {} & \textbf{Onto2Vec}&\textbf{Onto2Vec\_NN} &\textbf{Onto2Vec}&\textbf{Onto2Vec\_NN} \\
+        \midrule
+        GO (Baseline) &0.7660 &0.8779  & 0.7559 & 0.8364 \\
+        ChEBI &0.7899\textcolor{blue}{(+0.0239)}& 0.8914\textcolor{blue}{(+0.0135)}  & 0.7703\textcolor{blue}{(+0.0144)}& 0.8518\textcolor{blue}{(+0.0154)} \\
+        PO &0.7752\textcolor{blue}{(+0.0092)} & 0.8776\textcolor{red}{(-0.0003)} & 0.7671\textcolor{blue}{(+0.0112)} & 0.8469\textcolor{blue}{(+0.0105)}\\
+        CL & 0.7743\textcolor{blue}{(+0.0083)} & 0.8810\textcolor{blue}{(+0.0031)} & 0.7612\textcolor{blue}{(+0.0053)}& 0.8371\textcolor{blue}{(+0.0007)}\\
+        PATO & 0.7657\textcolor{red}{(-0.0003)} & 0.8768\textcolor{red}{(-0.0011)} & 0.7563\textcolor{blue}{(+0.0004)} & 0.8380\textcolor{blue}{(+0.0016)}\\
+      \end{tabularx}
+%    }
+%  \centerline{\includegraphics[width=1\textwidth]{pato-eval1.png}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Evaluating definitions}
+  Testing how much each ontologies' annotation properties contribute to predictions:
+  \tiny
+      \begin{tabularx}{\linewidth}{X|XX|XX}
+        \toprule
+        {} & \multicolumn{2}{c}{\textbf{Human}} & \multicolumn{2}{c}{\textbf{Arabidopsis}}\\
+        \midrule
+        {} & \textbf{Onto2Vec}&\textbf{Onto2Vec\_NN} &\textbf{Onto2Vec}&\textbf{Onto2Vec\_NN} \\
+        \midrule
+        GO (Baseline)&0.8727 &0.9033  & 0.8613 & 0.8903 \\
+        ChEBI & 0.8571\textcolor{red}{(-0.0156)} &0.8801\textcolor{red}{(-0.0232)} &0.8601\textcolor{red}{(-0.0012)}& 0.8880\textcolor{red}{(-0.0023)}\\
+        PO & 0.8680\textcolor{red}{(-0.0047)}&0.8824\textcolor{red}{(-0.0209)} & 0.8632\textcolor{blue}{(+0.0019)} & 0.8908\textcolor{blue}{(+0.0005)}\\
+        CL & 0.8811\textcolor{blue}{(+0.0084)}&0.9037\textcolor{blue}{(+0.0004)}  & 0.8614\textcolor{blue}{(+0.0001)} & 0.8899\textcolor{red}{(-0.0004)}\\
+        PATO & 0.8562\textcolor{red}{(-0.0165)}& 0.8711\textcolor{red}{(-0.0322)} & 0.8544\textcolor{red}{(-0.0069)}& 0.8860\textcolor{red}{(-0.0043)} \\
+      \end{tabularx}
+%  \centerline{\includegraphics[width=1\textwidth]{pato-eval2.png}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{OPA2Vec}
+  \begin{itemize}
+  \item \url{https://github.com/bio-ontology-research-group/opa2vec}
+  \item command line tool
+    \begin{itemize}
+    \item input: OWL ontology, set of entities with annotations/associations
+    \item output: vectors for each class and entity
+    \end{itemize}
+  \item includes Elk and HermiT
+  \item limitations: word-based
+    \begin{itemize}
+    \item completely ignores any semantics!
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{OPA2Vec Jupyter excercise}
+  \begin{itemize}
+  \item open the notebook {\tt OPA2Vec.ipynb}
+  \item run the whole notebook
+    \begin{itemize}
+    \item this should be relatively fast and not take too much time on
+      a modern laptop
+    \end{itemize}
+  \item play with the prediction methods (cosine similarity)
+  \end{itemize}
+\end{frame}
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

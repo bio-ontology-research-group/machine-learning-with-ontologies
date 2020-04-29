@@ -1,0 +1,12 @@
+[submodule "el-embeddings"]
+	path = el-embeddings
+	url = https://github.com/bio-ontology-research-group/el-embeddings
+[submodule "fastText"]
+	path = fastText
+	url = https://github.com/facebookresearch/fastText
+[submodule "walking-rdf-and-owl"]
+	path = walking-rdf-and-owl
+	url = https://github.com/bio-ontology-research-group/walking-rdf-and-owl
+[submodule "opa2vec"]
+	path = opa2vec
+	url = https://github.com/bio-ontology-research-group/opa2vec
