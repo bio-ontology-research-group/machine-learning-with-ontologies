@@ -10,3 +10,6 @@
 [submodule "opa2vec"]
 	path = opa2vec
 	url = https://github.com/bio-ontology-research-group/opa2vec
+[submodule "onto2vec"]
+	path = onto2vec
+	url = https://github.com/bio-ontology-research-group/onto2vec
