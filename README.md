@@ -29,6 +29,7 @@ Please install the following software to run our notebooks:
 * [Raptor RDF Syntax Library](http://librdf.org/raptor/)
 * Python 3.6+
 * Install python dependencies with: ```pip install -r requirements.txt```
+* Load submodules with: ```git submodule update --init --recursive```
 
 ## Running the notebooks
 ```jupyter notebook```
