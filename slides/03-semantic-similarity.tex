@@ -1,0 +1,876 @@
+\documentclass{beamer}
+\usepackage{booktabs}
+\usepackage{pdfpages}
+\usepackage{mathtools}
+\usepackage{enumerate}
+\usepackage{multirow,tabularx}
+\usepackage{booktabs}
+\usepackage{pdfpages}
+\usepackage{proof}
+\usepackage{cancel}
+\usepackage{chronology}
+\usepackage{graphicx}
+\usepackage{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{animate}
+\usepackage{xr}
+
+\PassOptionsToPackage{usenames,dvipsnames,svgnames}{xcolor}  
+\usepackage{tikz}
+\usepackage{tkz-graph}
+
+
+\usepackage{wasysym}
+\usepackage{proof}
+\usepackage{cancel}
+\usepackage{chronology}
+\usepackage{graphicx}
+\usepackage{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{soul}
+%\usepackage{pstricks}
+\setbeamertemplate{navigation symbols}{}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\el}{$\mathcal{EL}^{++}$}
+\renewcommand{\Re}{\mathbb{R}}
+\newcommand{\BigO}[1]{\ensuremath{\operatorname{O}\bigl(#1\bigr)}}
+\newcommand{\myul}[2][blue]{\sethlcolor{#1}\hl{#2}\setulcolor{black}}
+
+\newcommand<>{\cunderline}[3]{\only<#1>{#3}\only<#2>{\underline{#3}}}
+\newcommand<>{\cem}[3]{\only<#1>{#3}\only<#2>{\ul{#3}}}
+\newcommand<>{\cgray}[3]{\only<#1>{#3}\only<#2>{\textcolor{gray}{#3}}}
+\newcommand<>{\colorize}[4]{\only<#1>{#4}\only<#2>{\textcolor{#3}{#4}}}
+
+\setbeamertemplate{navigation symbols}{\insertslidenavigationsymbol}
+%\setbeamertemplate{navigation symbols}{}
+% \addtobeamertemplate{navigation symbols}{}{%
+%     \usebeamerfont{footline}%
+%     \usebeamercolor[fg]{footline}%
+%     \hspace{1em}%
+%     \insertframenumber/\inserttotalframenumber
+% }
+
+\mode<presentation>
+{
+\usecolortheme{crane}
+%\useoutertheme{split}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+  \insertshorttitle\hfill%
+  \insertframenumber\,/\,\inserttotalframenumber}
+
+\usefonttheme[onlysmall]{structurebold}
+}
+\renewcommand{\em}{\itshape}
+\usepackage{pifont}
+\definecolor{purple}{rgb}{1,0,1}
+\definecolor{dred}{rgb}{0.7,0,0}
+\definecolor{myred}{rgb}{1,0,0}
+\definecolor{dblue}{rgb}{0,0,0.7}
+\definecolor{dgreen}{rgb}{0,0.5,0}
+\definecolor{myyellow}{rgb}{1,1,0}
+\newcommand{\parents}[1]{parents(#1)}
+\setbeamertemplate{itemize item}[ball]
+
+
+% \mode<presentation>
+% {
+% \useinnertheme[shadow=true]{rounded}
+% \useoutertheme{infolines}
+% \usecolortheme{dove}
+% \setbeamerfont{block title}{size={}}
+% }
+
+\title[Bio-Ontologies]{Semantic similarity and machine learning with ontologies}
+
+\author{Robert Hoehndorf and Maxat Kulmanov}
+
+
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Semantic similarity}
+
+\begin{frame}
+  Semantic similarity
+  \begin{itemize}
+  \item We want to use {\em  background knowledge} in ontologies to
+    \begin{itemize}
+    \item determine similarity between classes,
+    \item instances,
+    \item and entities with ontology annotations
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{itemize}
+  \item semantic similarity measures similarity between classes
+  \item semantic similarity measures similarity between instances of classes
+  \item semantic similarity measures similarity between entities
+    {\em annotated} with classes
+  \item $\Rightarrow$ reduce all of this to similarity between classes
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  What properties do we want in a similarity measure?
+  \\
+  A function $sim: D \times D$ is a similarity on $D$ if, for
+  all $x, y \in D$, the function $sim$ is:  \begin{itemize}
+    \pause
+  \item non-negative: $sim(x,y) \geq 0$ for all $x, y$
+    \pause
+  \item symmetric: $sim(x,y) = sim(y,x)$
+    \pause
+  \item reflexive: $sim(x,x) = max_D$
+    \pause
+    \begin{itemize}
+    \item weaker form: $sim(x,x) > sim(x,y)$ for all $x \not= y$
+    \end{itemize}
+    \pause
+  \item $sim(x,x) > sim(x,y)$ for $x\not= y$
+    \pause
+  \item $sim$ is a {\em normalized} similarity measure if it has
+    values in $[0,1]$
+  \end{itemize}
+\end{frame}
+
+\usetikzlibrary{arrows,positioning,automata}
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state]          (A)                        {$Thing$};
+          \node[state]          (B) [below left =of A]    {$Color$};
+          \node[state]          (C) [below right =of A]    {$Shape$};
+          \node[state]          (D) [below left =of B]    {$Red$};
+          \node[state]          (H) [below right =of B]    {$Green$};
+          \node[state]          (E) [below  =of D]    {$Orange$};
+          \node[state]          (F) [below =of C]    {$Round$};
+          \node[state]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{every node/.style={fill=white}} 
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+        \pause
+      \item distance on shortest path (Rada {\em et al.}, 1989)
+        \pause
+      \item $dist_{Rada}(u,v) = sp(u, isa, v)$
+        \pause
+      \item $sim_{Rada}(u,v) = \frac{1}{dist_{Rada}(u,v) + 1}$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state]          (A)                        {$Thing$};
+          \node[state]          (B) [below left =of A]    {$Color$};
+          \node[state]          (C) [below right =of A]    {$Shape$};
+          \node[state, fill=green]          (D) [below left =of B]    {$Red$};
+          \node[state, fill=green]          (H) [below right =of B]    {$Green$};
+          \node[state]          (E) [below  =of D]    {$Orange$};
+          \node[state]          (F) [below =of C]    {$Round$};
+          \node[state]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [highlight]    node   {$isa$} (B)
+          (H)     edge [highlight]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item distance on shortest path
+        \pause
+       \item distance(green, red) = 2
+       \item $sim_{Rada}(green, red) = \frac{1}{3}$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state]          (A)                        {$Thing$};
+          \node[state]          (B) [below left =of A]    {$Color$};
+          \node[state]          (C) [below right =of A]    {$Shape$};
+          \node[state]          (D) [below left =of B]    {$Red$};
+          \node[state]          (H) [below right =of B]    {$Green$};
+          \node[state]          (E) [below  =of D]    {$Orange$};
+          \node[state, fill=green]          (F) [below =of C]    {$Round$};
+          \node[state, fill=green]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [highlight]    node   {$isa$} (C)
+          (G)     edge [highlight]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+       \item distance on shortest path
+       \item distance(square, round) = 2
+       \item $sim_{Rada}(square, round) = \frac{1}{3}$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state]          (A)                        {$Thing$};
+          \node[state, fill=green]          (B) [below left =of A]    {$Color$};
+          \node[state]          (C) [below right =of A]    {$Shape$};
+          \node[state]          (D) [below left =of B]    {$Red$};
+          \node[state]          (H) [below right =of B]    {$Green$};
+          \node[state, fill=green]          (E) [below  =of D]    {$Orange$};
+          \node[state]          (F) [below =of C]    {$Round$};
+          \node[state]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [highlight]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [highlight]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+       \item distance on shortest path
+       \item distance(orange, color) = 2
+       \item $sim_{Rada}(orange, color) = \frac{1}{3}$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{itemize}
+  \item shortest path is not always intuitive
+    \pause
+  \item we need a way to determine {\em specificity} of a class
+    \begin{itemize}
+    \item number of ancestors
+    \item number of children
+    \item information content
+    \end{itemize}
+    \pause
+  \item {\em density} of a branch in the ontology
+    \begin{itemize}
+    \item number of siblings
+    \item information content
+    \end{itemize}
+    \pause
+  \item account for different edge types
+    \begin{itemize}
+    \item non-uniform edge weighting
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity}
+  \begin{itemize}
+  \item term specificity measure $\sigma: C \mapsto \mathbb{R}$:
+    \begin{itemize}
+    \item $x \sqsubseteq y \rightarrow \sigma(x) \geq \sigma(y)$
+    \end{itemize}
+    \pause
+  \item intrinsic:
+    \begin{itemize}
+    \item $\sigma(x) = f(depth(x))$
+    \item $\sigma(x) = f(A(x))$ (for ancestors $A(x)$)
+    \item $\sigma(x) = f(D(x))$ (for descendants $D(x)$)
+    \item many more, e.g., Zhou et al.: $\sigma(x) = k \cdot \Big( 1-\frac{\log
+        |D(x)|}{\log |C|} \Big) + (1-k) \frac{\log depth(x)}{\log
+        depth(G_T)} $
+    \end{itemize}
+    \pause
+  \item extrinsic:
+    \begin{itemize}
+    \item $\sigma(x)$ defined as a function of instances (or annotations) $I$
+      \begin{itemize}
+      \item note: the number of instances monotonically decreases with
+        increasing depth in taxonomies
+      \end{itemize}
+    \item Resnik 1995: $eIC_{Resnik}(x) = -\log p(x)$ (with $p(x) =
+      \frac{|I(x)|}{|I|}$)
+      \begin{itemize}
+      \item in biology, one of the most popular specificity measure when
+        annotations are present
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Resnik 1995: similarity between $x$ and $y$ is the
+        information content of the {\em most informative common
+          ancestor}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,fill=green,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,fill=green,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Resnik 1995: similarity between $x$ and $y$ is the
+        information content of the {\em most informative common
+          ancestor}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,fill=yellow,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,fill=green,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,fill=green,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Resnik 1995: similarity between $x$ and $y$ is the
+        information content of the {\em most informative common
+          ancestor}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,fill=yellow,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,fill=green,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,fill=green,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Resnik 1995: similarity between $x$ and $y$ is the
+        information content of the {\em most informative common
+          ancestor}
+        \item $sim_{Resnik}(Green, Red) = 1.0$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,fill=yellow,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,fill=green,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,fill=green,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Resnik 1995: similarity between $x$ and $y$ is the
+        information content of the {\em most informative common
+          ancestor}
+        \item $sim_{Resnik}(Green, Orange) = 1.0$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,fill=yellow,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,fill=green,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,fill=green,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Resnik 1995: similarity between $x$ and $y$ is the
+        information content of the {\em most informative common
+          ancestor}
+        \item $sim_{Resnik}(Square, Orange) = 0.0$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{itemize}
+  \item (Red, Green) and (Orange, Green) have the same similarity
+  \item need to incorporate the specificity of the compared classes
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,fill=yellow,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,fill=green,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,fill=green,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Lin 1998: $sim_{Lin}(x,y) = \frac{2\cdot
+          IC(MICA(x,y))}{IC(x) + IC(y)}$
+        \pause
+      \item $sim_{Lin}(Green, Red) = 0.5$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,fill=yellow,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,fill=green,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,fill=green,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item Lin 1998: $sim_{Lin}(x,y) = \frac{2\cdot
+          IC(MICA(x,y))}{IC(x) + IC(y)}$
+      \item $sim_{Lin}(Green, Orange) = 0.4$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{itemize}
+  \item many(!) others:
+    \begin{itemize}
+    \item Jiang \& Conrath 1997
+    \item Mazandu \& Mulder 2013
+    \item Schlicker et al. 2009
+    \item ...
+  \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{itemize}
+  \item we only looked at comparing pairs of classes
+  \item mostly, we want to compare {\em sets} of classes
+    \begin{itemize}
+    \item set of GO annotations
+    \item set of signs and symptoms
+    \item set of phenotypes
+    \end{itemize}
+  \item two approaches:
+    \begin{itemize}
+    \item compare each class individually, then merge
+    \item directly set-based similarity measures
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,fill=gray,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,fill=green,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,fill=gray,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,fill=green,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item similarity between a square-and-orange thing and a
+        round-and-red thing
+        \pause
+      \item Pesquita et al., 2007:
+        $simGIC(X,Y) = \frac{\sum_{c \in A(X) \cap A(Y)}
+          IC(c)}{\sum_{c \in A(X) \cup A(Y)} IC(c)}$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{columns}
+    \begin{column}{.6\textwidth}
+      {\tiny
+        \begin{tikzpicture}[>=stealth',shorten >=1pt,node distance=2cm,on grid,initial/.style    ={}]
+          \node[state,fill=pink,label=below:$0.0$]          (A)                        {$Thing$};
+          \node[state,fill=pink,label=below:$1.0$]          (B) [below left =of A]    {$Color$};
+          \node[state,fill=pink,label=right:$1.0$]          (C) [below right =of A]    {$Shape$};
+          \node[state,fill=gray,label=right:$2.0$]          (D) [below left =of B]    {$Red$};
+          \node[state,label=below:$2.0$]          (H) [below right =of B]    {$Green$};
+          \node[state,fill=green,label=below:$3.0$]          (E) [below  =of D]    {$Orange$};
+          \node[state,fill=gray,label=below:$2.0$]          (F) [below =of C]    {$Round$};
+          \node[state,fill=green,label=below:$2.0$]          (G) [below right =of C]    {$Square$};
+          \tikzset{mystyle/.style={->,double=orange}} 
+          \tikzset{highlight/.style={->,double=green}} 
+          \tikzset{every node/.style={fill=white}}
+          \path (B)     edge [mystyle]    node   {$isa$} (A)
+          (C)     edge [mystyle]    node   {$isa$} (A) 
+          (D)     edge [mystyle]    node   {$isa$} (B)
+          (H)     edge [mystyle]    node   {$isa$} (B)
+          (E)     edge [mystyle]    node   {$isa$} (D)
+          (F)     edge [mystyle]    node   {$isa$} (C)
+          (G)     edge [mystyle]    node   {$isa$} (C);
+          \tikzset{mystyle/.style={<->,double=orange}}   
+          \tikzset{mystyle/.style={<->,relative=true,in=0,out=60,double=orange}}
+        \end{tikzpicture}
+      }
+    \end{column}
+    \begin{column}{.4\textwidth}
+      \begin{itemize}
+      \item similarity between a square-and-orange thing and a
+        round-and-red thing
+      \item Pesquita et al., 2007:
+        $simGIC(X,Y) = \frac{\sum_{c \in A(X) \cap A(Y)}
+          IC(c)}{\sum_{c \in A(X) \cup A(Y)} IC(c)}$
+      \item $simGIC(so,rr) = \frac{2}{11}$
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{itemize}
+  \item alternatively: use different merging strategies
+  \item common: average, maximum, {\bf best-matching average}
+    \begin{itemize}
+    \item Average: $sim_A(X,Y) = \frac{\sum_{x\in X} \sum_{y \in Y} sim(x,y)}{|X| \times |Y|}$
+    \item Max average: $sim_{MA}(X,Y) = \frac{1}{|X|} \sum_{x\in X} \max_{y \in Y} sim(x,y)$
+    \item Best match average: $sim_{BMA}(X,Y) = \frac{sim_{MA}(X,Y) + sim_{MA}(Y,X)}{2}$
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to measure similarity?}
+  \begin{itemize}
+  \item Semantic Measures Library:
+    \begin{itemize}
+    \item comprehensive Java library
+    \item \url{http://www.semantic-measures-library.org/}
+    \end{itemize}
+  \item R packages: GOSim, GOSemSim, HPOSim, LSAfun,
+    ontologySimilarity,...
+  \item Python: sematch, fastsemsim (GO only)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Applications of semantic similarity}
+  \begin{itemize}
+  \item no obvious choice of similarity measure
+  \item depends on application
+    \begin{itemize}
+    \item e.g., predicting PPIs in different organisms through
+      similarity may benefit from a different similarity measure!
+    \end{itemize}
+  \item different similarity measures may react differently to biases
+    in data
+  \item needs some testing and experience
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Applications of semantic similarity}
+  Recommendations:
+  \begin{itemize}
+  \item use Resnik's information content measure
+  \item use Resnik's similarity
+  \item use Best Match Average
+  \item use the full ontology
+  \item classify your ontology using an automated reasoner before
+    applying semantic similarity
+    \begin{itemize}
+    \item although many ontologies come pre-classified
+    \end{itemize}
+  \item $\Rightarrow$ but there are many exceptions
+    \begin{itemize}
+    \item similar location $\Rightarrow$ use location subset of GO
+    \item developmental phenotypes $\Rightarrow$ use developmental
+      branch of phenotype ontology
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\end{document}

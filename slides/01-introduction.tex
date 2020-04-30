@@ -1,0 +1,163 @@
+\documentclass{beamer}
+\usepackage{booktabs}
+\usepackage{pdfpages}
+\usepackage{mathtools}
+\usepackage{enumerate}
+\usepackage{multirow,tabularx}
+\usepackage{booktabs}
+\usepackage{pdfpages}
+\usepackage{proof}
+\usepackage{cancel}
+\usepackage{chronology}
+\usepackage{graphicx}
+\usepackage{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{animate}
+\usepackage{xr}
+
+\PassOptionsToPackage{usenames,dvipsnames,svgnames}{xcolor}  
+\usepackage{tikz}
+\usepackage{tkz-graph}
+
+
+\usepackage{wasysym}
+\usepackage{proof}
+\usepackage{cancel}
+\usepackage{chronology}
+\usepackage{graphicx}
+\usepackage{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{soul}
+%\usepackage{pstricks}
+\setbeamertemplate{navigation symbols}{}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\el}{$\mathcal{EL}^{++}$}
+\renewcommand{\Re}{\mathbb{R}}
+\newcommand{\BigO}[1]{\ensuremath{\operatorname{O}\bigl(#1\bigr)}}
+\newcommand{\myul}[2][blue]{\sethlcolor{#1}\hl{#2}\setulcolor{black}}
+
+\newcommand<>{\cunderline}[3]{\only<#1>{#3}\only<#2>{\underline{#3}}}
+\newcommand<>{\cem}[3]{\only<#1>{#3}\only<#2>{\ul{#3}}}
+\newcommand<>{\cgray}[3]{\only<#1>{#3}\only<#2>{\textcolor{gray}{#3}}}
+\newcommand<>{\colorize}[4]{\only<#1>{#4}\only<#2>{\textcolor{#3}{#4}}}
+
+\setbeamertemplate{navigation symbols}{\insertslidenavigationsymbol}
+%\setbeamertemplate{navigation symbols}{}
+% \addtobeamertemplate{navigation symbols}{}{%
+%     \usebeamerfont{footline}%
+%     \usebeamercolor[fg]{footline}%
+%     \hspace{1em}%
+%     \insertframenumber/\inserttotalframenumber
+% }
+
+\mode<presentation>
+{
+\usecolortheme{crane}
+%\useoutertheme{split}
+
+\expandafter\def\expandafter\insertshorttitle\expandafter{%
+  \insertshorttitle\hfill%
+  \insertframenumber\,/\,\inserttotalframenumber}
+
+\usefonttheme[onlysmall]{structurebold}
+}
+\renewcommand{\em}{\itshape}
+\usepackage{pifont}
+\definecolor{purple}{rgb}{1,0,1}
+\definecolor{dred}{rgb}{0.7,0,0}
+\definecolor{myred}{rgb}{1,0,0}
+\definecolor{dblue}{rgb}{0,0,0.7}
+\definecolor{dgreen}{rgb}{0,0.5,0}
+\definecolor{myyellow}{rgb}{1,1,0}
+\newcommand{\parents}[1]{parents(#1)}
+\setbeamertemplate{itemize item}[ball]
+
+
+% \mode<presentation>
+% {
+% \useinnertheme[shadow=true]{rounded}
+% \useoutertheme{infolines}
+% \usecolortheme{dove}
+% \setbeamerfont{block title}{size={}}
+% }
+
+\title[Bio-Ontologies]{Semantic similarity and machine learning with ontologies}
+
+\author{Robert Hoehndorf and Maxat Kulmanov}
+
+
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Introduction}
+
+\begin{frame}
+  \frametitle{Ontologies, machine learning, and AI}
+  \begin{itemize}
+  \item ontologies are ubiquitous
+  \item rich formal characterization (axioms)
+  \item how can they be used for (predictive) data analysis?
+    \begin{itemize}
+    \item ``fuzzy'', similarity-based search
+    \item predictive analysis and machine learning
+    \item background knowledge
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Learning goals}
+  \begin{itemize}
+  \item machine learning with ontologies as {\em features} (or
+    background knowledge)
+  \item unsupervised or supervised:
+    \begin{itemize}
+    \item here: mostly unsupervised {\em feature} learning
+    \item ``deep'' learning
+    \end{itemize}
+  \item focus on existing tools and methods
+    \begin{itemize}
+    \item Jupyter Notebooks and code examples
+    \end{itemize}
+  \item not covered:
+    \begin{itemize}
+    \item learning ontologies (axioms, definitions) from data
+    \item (most) natural language processing
+    \item reasoning with ontologies
+    \item learning on ``knowledge graphs''
+    \item machine learning theory
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Agenda}
+  \begin{itemize}
+  \item Introduction: ontologies and graphs
+  \item Semantic similarity
+  \item Machine learning:
+    \begin{itemize}
+    \item syntactic
+    \item graph-based
+    \item model-theoretic
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
