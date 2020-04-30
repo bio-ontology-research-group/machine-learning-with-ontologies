@@ -30,6 +30,9 @@ Please install the following software to run our notebooks:
 * Python 3.6+
 * Install python dependencies with: ```pip install -r requirements.txt```
 
+## Running the notebooks
+```jupyter notebook```
+
 ## Slides
 
 We provides slides that can be used to present some of this work. The slides have been created as part of an [Ontology Tutorial](https://github.com/bio-ontology-research-group/ontology-tutorial) that was developed and taught over several years at various events.
