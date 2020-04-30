@@ -5,7 +5,7 @@ Furthermore, we make a set of slides available (as PDF and source code in LaTeX 
 
 ## Notebooks
 
-We provide several [Jupyter](https://jupyter.org/) notebooks in the [notebooks](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/tree/master/notebooks) directory. The notebooks include:
+We provide several [Jupyter](https://jupyter.org/) notebooks in the [root](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/tree/master) directory. The notebooks include:
 
 * [data.ipynb](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/blob/master/notebooks/data.ipynb) -- data generation and preprocessing
 * [semantic-similarity.ipynb](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/blob/master/notebooks/semantic-similarity.ipynb) -- predicting protein--protein interactions using semantic similarity measures
@@ -16,6 +16,19 @@ We provide several [Jupyter](https://jupyter.org/) notebooks in the [notebooks](
 
 
 ## PPI Benchmark
+
+We provide two benchmark datasets for protein--protein interaction
+prediction task. The datasets can be downloaded using the following
+link:
+* [data.tar.gz](https://bio2vec.cbrc.kaust.edu.sa/data/mlwo/data.tar.gz)
+
+## Dependencies
+
+Please install the following software to run our notebooks:
+* [Groovy](https://groovy-lang.org/install.html)
+* [Raptor RDF Syntax Library](http://librdf.org/raptor/)
+* Python 3.6+
+* Install python dependencies with: ```pip install -r requirements.txt```
 
 ## Slides
 
