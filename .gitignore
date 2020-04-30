@@ -1,0 +1,4 @@
+data/
+venv/
+.ipynb_checkpoints/
+data.tar.gz

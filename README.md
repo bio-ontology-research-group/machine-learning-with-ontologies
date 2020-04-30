@@ -15,9 +15,24 @@ We provide several [Jupyter](https://jupyter.org/) notebooks. The notebooks incl
 * [elembedding.ipynb](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/blob/master/elembedding.ipynb) -- ontology embedding that approximates the ontology models (EL Embeddings)
 
 
+### Dependencies
+
+Please install the following software to run our notebooks:
+* [Groovy](https://groovy-lang.org/install.html)
+* [Raptor RDF Syntax Library](http://librdf.org/raptor/)
+* Python 3.6+
+* Install python dependencies with: ```pip install -r requirements.txt```
+* Load submodules with: ```git submodule update --init --recursive```
+
+### Running the notebooks
+Run `jupyter notebook` and then open the notebook files.
+
 ## PPI Benchmark
 
-
+We provide two benchmark datasets for protein--protein interaction
+prediction task. The datasets can be downloaded using the following
+link:
+* [data.tar.gz](https://bio2vec.cbrc.kaust.edu.sa/data/mlwo/data.tar.gz)
 
 ## Slides
 
