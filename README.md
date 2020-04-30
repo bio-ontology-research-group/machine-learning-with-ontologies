@@ -22,10 +22,10 @@ We provide several [Jupyter](https://jupyter.org/) notebooks in the [notebooks](
 We provides slides that can be used to present some of this work. The slides have been created as part of an [Ontology Tutorial](https://github.com/bio-ontology-research-group/ontology-tutorial) that was developed and taught over several years at various events.
 All methods in the slides are also implemented with examples in our Jupyter Notebooks.
 
-# [Introduction](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/blob/master/slides/01-introduction.pdf)
-# [Ontologies and Graphs](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/blob/master/slides/02-ontologies-and-graphs.pdf) -- basic introduction to ontologies, Description Logic, and how they can give rise to graph-based representations
-# [Semantic Similarity](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/blob/master/slides/03-semantic-similarity.pdf) -- different semantic similarity measures on ontologies
-# [Ontology Embeddings](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/blob/master/slides/04-ontology-embeddings.pdf) -- methods to generate embeddings for ontologies, including syntactic, graph-based, and model-based approaches.
+1. [Introduction](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/blob/master/slides/01-introduction.pdf)
+2. [Ontologies and Graphs](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/blob/master/slides/02-ontologies-and-graphs.pdf) -- basic introduction to ontologies, Description Logic, and how they can give rise to graph-based representations
+3. [Semantic Similarity](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/blob/master/slides/03-semantic-similarity.pdf) -- different semantic similarity measures on ontologies
+4. [Ontology Embeddings](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/blob/master/slides/04-ontology-embeddings.pdf) -- methods to generate embeddings for ontologies, including syntactic, graph-based, and model-based approaches.
 
 ## Resources
 
