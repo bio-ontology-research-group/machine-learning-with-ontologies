@@ -5,7 +5,7 @@ Furthermore, we make a set of slides available (as PDF and source code in LaTeX 
 
 ## Notebooks
 
-We provide several [Jupyter](https://jupyter.org/) notebooks in the [root](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/tree/master) directory. The notebooks include:
+We provide several [Jupyter](https://jupyter.org/) notebooks. The notebooks include:
 
 * [data.ipynb](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/blob/master/data.ipynb) -- data generation and preprocessing
 * [semantic-similarity.ipynb](https://github.com/bio-ontology-research-group/machine-learning-with-ontologies/blob/master/semantic-similarity.ipynb) -- predicting protein--protein interactions using semantic similarity measures
@@ -32,7 +32,7 @@ interactions and Gene Ontology Resource. This archive includes:
 * Protein aliases files with ID mappings between StringDB proteins and
   other databases.
 
-## Dependencies
+### Dependencies
 
 Please install the following software to run our notebooks:
 * [Groovy](https://groovy-lang.org/install.html)
@@ -41,8 +41,8 @@ Please install the following software to run our notebooks:
 * Install python dependencies with: ```pip install -r requirements.txt```
 * Load submodules with: ```git submodule update --init --recursive```
 
-## Running the notebooks
-Run the notebooks with: ```jupyter notebook```
+### Running the notebooks
+Run `jupyter notebook` and then open the notebook files.
 
 ## Slides
 
@@ -78,7 +78,9 @@ All methods in the slides are also implemented with examples in our Jupyter Note
 
 ### Computing Semantic Similarity
 
-* [Semantic Measures Library](http://www.semantic-measures-library.org/sml/): Comprehensive Java library to compute semantic similarity measures over ontologies
+* [Semantic Measures Library](http://www.semantic-measures-library.org/sml/): Comprehensive Java library to compute semantic similarity measures over ontologies.
+* [sematch](https://github.com/gsi-upm/sematch): Python library to compute semantic similarity on knowledge graphs.
+* [DiShIn](https://github.com/lasigeBioTM/DiShIn): Python library to compute semantic similarity on ontologies.
 
 ### Embedding graphs
 
