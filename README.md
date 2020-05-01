@@ -68,7 +68,9 @@ All methods in the slides are also implemented with examples in our Jupyter Note
 
 ### Computing Semantic Similarity
 
-* [Semantic Measures Library](http://www.semantic-measures-library.org/sml/): Comprehensive Java library to compute semantic similarity measures over ontologies
+* [Semantic Measures Library](http://www.semantic-measures-library.org/sml/): Comprehensive Java library to compute semantic similarity measures over ontologies.
+* [sematch](https://github.com/gsi-upm/sematch): Python library to compute semantic similarity on knowledge graphs.
+* [DiShIn](https://github.com/lasigeBioTM/DiShIn): Python library to compute semantic similarity on ontologies.
 
 ### Embedding graphs
 
