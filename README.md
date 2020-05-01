@@ -19,8 +19,18 @@ We provide several [Jupyter](https://jupyter.org/) notebooks in the [root](https
 
 We provide two benchmark datasets for protein--protein interaction
 prediction task. The datasets can be downloaded using the following
-link:
-* [data.tar.gz](https://bio2vec.cbrc.kaust.edu.sa/data/mlwo/data.tar.gz)
+link: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3779900.svg)](https://doi.org/10.5281/zenodo.3779900)
+
+Two benchmark datasets for evaluating machine learning methods on the
+task of predicting protein--protein interaction networks. The original
+data was downloaded from StringDB database of protein--protein
+interactions and Gene Ontology Resource. This archive includes:
+
+* Protein--protein interactions for human and yeast organisms
+* Gene Ontology in OBO and OWL format
+* Gene Ontology Annotations for human and yeast proteins
+* Protein aliases files with ID mappings between StringDB proteins and
+  other databases.
 
 ## Dependencies
 
@@ -32,7 +42,7 @@ Please install the following software to run our notebooks:
 * Load submodules with: ```git submodule update --init --recursive```
 
 ## Running the notebooks
-```jupyter notebook```
+Run the notebooks with: ```jupyter notebook```
 
 ## Slides
 
