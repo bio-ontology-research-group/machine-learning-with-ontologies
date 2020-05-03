@@ -31,6 +31,11 @@ interactions and Gene Ontology Resource. This archive includes:
 * Gene Ontology Annotations for human and yeast proteins
 * Protein aliases files with ID mappings between StringDB proteins and
   other databases.
+  
+We filter out interactions with confidence score less than 700 and
+consider them to be symmetric. We randomly split the datasets into
+80/20 % training/testing sets by the number of interactions and use 20
+% of the training set as a validation set.
 
 ### Dependencies
 
