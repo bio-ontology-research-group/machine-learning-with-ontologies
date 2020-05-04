@@ -40,7 +40,7 @@ consider them to be symmetric. We randomly split the datasets into
 ### Dependencies
 
 Please install the following software to run our notebooks:
-* [Groovy](https://groovy-lang.org/install.html)
+* [Groovy](https://groovy-lang.org/install.html) 2.0+
 * [Raptor RDF Syntax Library](http://librdf.org/raptor/)
 * Python 3.6+
 * Install python dependencies with: ```pip install -r requirements.txt```
