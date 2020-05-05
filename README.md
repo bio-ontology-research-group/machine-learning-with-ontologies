@@ -94,7 +94,6 @@ All methods in the slides are also implemented with examples in our Jupyter Note
 * [Walking RDF & OWL](https://github.com/bio-ontology-research-group/walking-rdf-and-owl): Graph-based ontology embedding method that combines generation of graphs from ontologies, random walks on the generated graphs, and generation of embeddings using Word2Vec. Supports only the ontology taxonomy.
 * [RDF2Vec](https://github.com/dwslab/jRDF2Vec) ([pyRDF2Vec](https://github.com/IBCNServices/pyRDF2Vec)): Method to embed RDF graphs. 
 * [Node2Vec](http://snap.stanford.edu/node2vec/): Method to embed graphs using biased random walks.
-
 * [PyKEEN](https://github.com/SmartDataAnalytics/PyKEEN) and [BioKEEN](https://github.com/SmartDataAnalytics/BioKEEN): Toolkit for generating knowledge graph embeddings using several different approaches. 
 * [OpenKE](https://github.com/thunlp/OpenKE): Library and toolkit for generating knowledge graph embeddings
 * [PyTorch Geometric](https://github.com/rusty1s/pytorch_geometric): Library for graph neural networks which can be used to generate graph embeddings.
