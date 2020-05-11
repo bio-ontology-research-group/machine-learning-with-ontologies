@@ -114,5 +114,6 @@ All methods in the slides are also implemented with examples in our Jupyter Note
   generic and can be used with other ontologies and applications.
 
 
-## Acknowledgements
+## Publication
 
+If you like our work, please cite our [preprint](https://www.biorxiv.org/content/10.1101/2020.05.07.082164v1).
