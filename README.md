@@ -34,8 +34,38 @@ interactions and Gene Ontology Resource. This archive includes:
   
 We filter out interactions with confidence score less than 700 and
 consider them to be symmetric. We randomly split the datasets into
-80/20 % training/testing sets by the number of interactions and use 20
-% of the training set as a validation set.
+80/20% training/testing sets by the number of interactions and use 20% of the training set as a validation set.
+
+### Current benchmark results (yeast)
+
+  Method            Raw Hits\@10   Filtered Hits\@10   Raw Hits\@10   Filtered Hits\@100   Raw Mean Rank   Filtered Mean Rank   Raw AUC    Filtered AUC
+  ----------------- -------------- ------------------- -------------- -------------------- --------------- -------------------- ---------- --------------
+  TransE            0.06           0.13                0.32           0.40                 1125.4          1074.8               0.82       0.83
+  SimResnik         **0.09**       **0.17**            0.38           0.48                 757.8           706.9                0.86       0.87
+  SimLin            0.08           0.15                0.33           0.41                 875.4           824.5                0.84       0.85
+  SiameseNN         0.06           0.17                0.46           0.68                 674.27          622.20               0.89       0.90
+  SiameseNN (Ont)   0.08           **0.19**            **0.50**       **0.72**             543.56          491.56               0.91       0.92
+  EL Embeddings     0.08           0.17                0.44           0.62                 **451.29**      **394.04**           **0.92**   **0.93**
+  Onto2Vec          0.08           0.15                0.35           0.48                 641.1           587.9                0.79       0.80
+  OPA2Vec           0.06           0.13                0.39           0.58                 523.3           466.6                0.87       0.88
+  Random walk       0.06           0.13                0.31           0.40                 612.6           587.4                0.87       0.88
+  Node2Vec          0.07           0.15                0.36           0.46                 589.1           522.4                0.87       0.88
+
+### Current benchmark results (human)
+
+  Method            Raw Hits\@10   Filtered Hits\@10   Raw Hits\@10   Filtered Hits\@100   Raw Mean Rank   Filtered Mean Rank   Raw AUC    Filtered AUC
+  ----------------- -------------- ------------------- -------------- -------------------- --------------- -------------------- ---------- --------------
+  TransE            **0.05**       0.11                0.24           0.29                 3960.4          3890.6               0.78       0.79
+  SimResnik         **0.05**       0.09                0.25           0.30                 1933.6          1864.4               0.88       0.89
+  SimLin            0.04           0.08                0.20           0.23                 2287.9          2218.7               0.86       0.87
+  SiameseNN         0.05           **0.15**            **0.41**       **0.64**             1881.10         1808.77              0.90       0.89
+  SiameseNN (Ont)   0.05           0.13                0.38           0.59                 1838.31         1766.34              0.89       0.89
+  EL Embeddings     0.01           0.02                0.22           0.26                 **1679.72**     **1637.65**          **0.90**   **0.90**
+  Onto2Vec          **0.05**       0.08                0.24           0.31                 2434.6          2391.2               0.77       0.77
+  OPA2Vec           0.03           0.07                0.23           0.26                 1809.7          1767.6               0.86       0.88
+  Random walk       0.04           0.10                0.28           0.34                 1942.6          1958.6               0.85       0.86
+  Node2Vec          0.03           0.07                0.22           0.28                 1860.5          1813.1               0.86       0.87
+
 
 ### Dependencies
 
