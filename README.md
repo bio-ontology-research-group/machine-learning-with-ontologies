@@ -80,7 +80,7 @@ Run `jupyter notebook` and then open the notebook files.
 |  Node2Vec       |   0.03      |     0.07       |         0.22     |      0.28          |       1860.5    |      1813.1        |       0.86    |   0.87|
 
 ### Adding to the benchmark
-To add your own results to the benchmark, please send us a pull request with a link to the source repository that contains the code to reproduce the results.
+To add your own results to the benchmark, please send us a pull request with a link to the source repository that contains the code to reproduce the results. Alternatively, please create an issue on the issue tracker and we will add your results.
 
 ## Slides
 
