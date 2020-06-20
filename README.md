@@ -50,6 +50,20 @@ Run `jupyter notebook` and then open the notebook files.
 
 ### Current benchmark results (yeast)
 
+| Method           |Raw Hits\@10  |
+|------------------|--------------|
+| TransE           |0.06          |
+| SimResnik        |**0.09**      |
+| SimLin           |0.08          |
+| SiameseNN        |0.06          |
+| SiameseNN (Ont)  |0.08          |
+| EL Embeddings    |0.08          |
+| Onto2Vec         |0.08          |
+| OPA2Vec          |0.06          |
+| Random walk      |0.06          |
+| Node2Vec         |0.07          |
+
+
 ### Current benchmark results (human)
 
 ### Adding to the benchmark
