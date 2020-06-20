@@ -66,6 +66,19 @@ Run `jupyter notebook` and then open the notebook files.
 
 ### Current benchmark results (human)
 
+|Method           | Raw Hits\@10  | Filtered Hits\@10 | Raw Hits\@10  | Filtered Hits\@100 | Raw Mean Rank | Filtered Mean Rank | Raw AUC  |  Filtered AUC|
+|-----------------| --------------|-------------------|---------------|--------------------|---------------|--------------------|----------|--------------|
+|  TransE       |     **0.05**  |     0.11       |         0.24      |     0.29          |       3960.4    |      3890.6        |       0.78   |    0.79|
+|  SimResnik     |    **0.05**  |     0.09       |         0.25      |     0.30          |       1933.6    |      1864.4        |       0.88   |    0.89|
+|  SimLin        |    0.04      |     0.08       |         0.20      |     0.23          |       2287.9    |      2218.7        |       0.86   |    0.87|
+|  SiameseNN      |   0.05      |     **0.15**   |         **0.41**  |     **0.64**      |       1881.10   |      1808.77       |       0.90   |    0.89|
+|  SiameseNN (Ont)|   0.05      |     0.13       |         0.38     |      0.59          |       1838.31   |      1766.34       |       0.89   |    0.89|
+|  EL Embeddings  |   0.01      |     0.02       |         0.22     |      0.26          |       **1679.72**|     **1637.65**   |       **0.90**|   **0.90**|
+|  Onto2Vec       |   **0.05**  |     0.08       |         0.24     |      0.31          |       2434.6    |      2391.2        |       0.77    |   0.77|
+|  OPA2Vec        |   0.03      |     0.07       |         0.23     |      0.26          |       1809.7    |      1767.6        |       0.86    |   0.88|
+|  Random walk    |   0.04      |     0.10       |         0.28     |      0.34          |       1942.6    |      1958.6        |       0.85    |   0.86|
+|  Node2Vec       |   0.03      |     0.07       |         0.22     |      0.28          |       1860.5    |      1813.1        |       0.86    |   0.87|
+
 ### Adding to the benchmark
 To add your own results to the benchmark, please send us a pull request with a link to the source repository that contains the code to reproduce the results.
 
