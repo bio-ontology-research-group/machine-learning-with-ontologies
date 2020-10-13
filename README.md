@@ -149,4 +149,19 @@ All methods in the slides are also implemented with examples in our Jupyter Note
 
 ## Publication
 
-If you like our work, please cite our [preprint](https://www.biorxiv.org/content/10.1101/2020.05.07.082164v1).
+If you like our work, please cite our [paper](https://doi.org/10.1093/bib/bbaa199):
+```
+@article{machine-learning-with-ontologies,
+    author = {Kulmanov, Maxat and Smaili, Fatima Zohra and Gao, Xin and Hoehndorf, Robert},
+    title = {Semantic similarity and machine learning with ontologies},
+    journal = {Briefings in Bioinformatics},
+    year = {2020},
+    month = {10},
+    abstract = {Ontologies have long been employed in the life sciences to formally represent and reason over domain knowledge and they are employed in almost every major biological database. Recently, ontologies are increasingly being used to provide background knowledge in similarity-based analysis and machine learning models. The methods employed to combine ontologies and machine learning are still novel and actively being developed. We provide an overview over the methods that use ontologies to compute similarity and incorporate them in machine learning methods; in particular, we outline how semantic similarity measures and ontology embeddings can exploit the background knowledge in ontologies and how ontologies can provide constraints that improve machine learning models. The methods and experiments we describe are available as a set of executable notebooks, and we also provide a set of slides and additional resources at https://github.com/bio-ontology-research-group/machine-learning-with-ontologies.},
+    issn = {1477-4054},
+    doi = {10.1093/bib/bbaa199},
+    url = {https://doi.org/10.1093/bib/bbaa199},
+    note = {bbaa199},
+    eprint = {https://academic.oup.com/bib/advance-article-pdf/doi/10.1093/bib/bbaa199/33875255/bbaa199.pdf},
+}
+```
