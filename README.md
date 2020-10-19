@@ -130,6 +130,7 @@ All methods in the slides are also implemented with examples in our Jupyter Note
 * [PyKEEN](https://github.com/SmartDataAnalytics/PyKEEN) and [BioKEEN](https://github.com/SmartDataAnalytics/BioKEEN): Toolkit for generating knowledge graph embeddings using several different approaches. 
 * [OpenKE](https://github.com/thunlp/OpenKE): Library and toolkit for generating knowledge graph embeddings
 * [PyTorch Geometric](https://github.com/rusty1s/pytorch_geometric): Library for graph neural networks which can be used to generate graph embeddings.
+* [OWL2Vec*](https://github.com/KRR-Oxford/OWL2Vec-Star): Graph-based ontology embedding method that combines generation of graphs from ontologies, random walks on the generated graphs, and generation of embeddings using Word2Vec. Supports OWL 2 axioms and annotation axioms. Extension of OWL2Vec.
 
 
 ### Embedding axioms
