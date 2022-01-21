@@ -16,7 +16,7 @@ gast==0.2.2
 grpcio==1.22.0
 h5py==2.9.0
 ipykernel==5.1.1
-ipython==7.6.1
+ipython==7.16.3
 ipython-genutils==0.2.0
 ipywidgets==7.5.0
 isodate==0.6.0
