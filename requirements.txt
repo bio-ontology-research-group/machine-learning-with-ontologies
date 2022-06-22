@@ -39,7 +39,7 @@ MulticoreTSNE==0.1
 nbconvert==5.5.0
 nbformat==4.4.0
 notebook==6.0.0
-numpy==1.16.4
+numpy==1.22.0
 pandas==0.24.2
 pandocfilters==1.4.2
 parso==0.5.1
